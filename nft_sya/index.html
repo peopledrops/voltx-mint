@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="fc:frame:image:aspect_ratio" content="1.91:1" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOLT - X Drop</title>
+
+    <meta property="og:title" content="VOLT - X Drop" />
+    <meta property="og:description" content="Tactical Defense Unit Drop. 5555 Unique Items on Base." />
+    <meta property="og:image" content="https://ipfs.io/ipfs/bafybeifzerrtvyjh2vclbjlyyqwh43bd57ljbjebonda5pfgaumk2nrwde/6201484870924569888.jpg" />
+    <meta property="og:url" content="https://voltaic-vessel.netlify.app/" />
+    <meta property="og:type" content="website" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="VOLT - X Drop" />
+    <meta name="twitter:description" content="5555 Unique Tactical Soldiers on Base." />
+    <meta name="twitter:image" content="https://ipfs.io/ipfs/bafybeifzerrtvyjh2vclbjlyyqwh43bd57ljbjebonda5pfgaumk2nrwde/6201484870924569888.jpg" />
+
+    <meta property="fc:frame" content="vNext" />
+    <meta name="fc:frame:image" content="https://ipfs.io/ipfs/bafybeifzerrtvyjh2vclbjlyyqwh43bd57ljbjebonda5pfgaumk2nrwde/6201484870924569888.jpg" />
+    <meta property="fc:frame:button:1" content="Mint VOLT - X" />
+    <meta property="fc:frame:button:1:action" content="link" />
+    <meta property="fc:frame:button:1:target" content="https://voltaic-vessel.netlify.app/" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+    <style>
+        body {
+            background-color: #050505;
+            color: #e0e0e0;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            background: #1a1a1a;
+            border: 2px solid #ffff00; 
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 255, 0, 0.2);
+            text-align: center;
+            max-width: 350px;
+            width: 100%;
+        }
+        .nft-image {
+            width: 100%;
+            border-radius: 10px;
+            border: 2px solid #333;
+            margin-bottom: 20px;
+            transition: all 0.5s ease;
+        }
+        .success-glow {
+            box-shadow: 0 0 50px #ffff00;
+            border-color: #fff;
+            transform: scale(1.02);
+        }
+        h1 { margin: 10px 0; color: #ffff00; text-transform: uppercase; font-size: 24px; }
+        p { color: #888; font-size: 14px; margin-bottom: 25px; }
+        .btn-mint {
+            background-color: #ffff00;
+            color: #000;
+            border: none;
+            padding: 15px 0;
+            width: 100%;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            border-radius: 8px;
+            text-transform: uppercase;
+            transition: 0.2s;
+        }
+        .btn-mint:hover {
+            background-color: #ffdd00;
+            box-shadow: 0 0 15px rgba(255, 255, 0, 0.8);
+        }
+        .btn-mint:disabled {
+            background-color: #333;
+            color: #555;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 13px;
+            line-height: 1.5;
+            min-height: 40px;
+        }
+        .link-opensea {
+            color: #ffff00;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <img id="nftPreview" 
+             src="https://ipfs.io/ipfs/bafybeifzerrtvyjh2vclbjlyyqwh43bd57ljbjebonda5pfgaumk2nrwde/6201484870924569888.jpg" 
+             class="nft-image" 
+             alt="VOLT - X">
+        
+        <h1>VOLT - X</h1>
+        <p>Tactical Defense Unit Drop.<br>1000 Unique Items on Base.</p>
+        
+        <button id="mintBtn" class="btn-mint" onclick="mintNFT()">MINT NOW</button>
+        
+        <div id="status">Ready to mint...</div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        // Masukkan Alamat Smart Contract yang baru dideploy (5555 supply)
+        const CONTRACT_ADDRESS = "0x3858cd18c973D96c68f1D8Ba832c43e237755c77"; 
+
+        const ABI = [
+            "function mint() public payable"
+        ];
+
+        async function mintNFT() {
+            const statusEl = document.getElementById("status");
+            const btn = document.getElementById("mintBtn");
+            const imgEl = document.getElementById("nftPreview");
+
+            if (!window.ethereum) {
+                statusEl.innerText = "⚠️ Error: No crypto wallet found!";
+                return;
+            }
+
+            try {
+                btn.disabled = true;
+                btn.innerText = "Connecting...";
+                
+                const provider = new ethers.BrowserProvider(window.ethereum);
+                const signer = await provider.getSigner();
+
+                // Check Network (Base Mainnet ID 8453)
+                const network = await provider.getNetwork();
+                if (network.chainId !== 8453n) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0x2105' }], 
+                        });
+                    } catch (err) {
+                        statusEl.innerText = "❌ Please switch to Base Mainnet in MetaMask.";
+                        btn.disabled = false;
+                        btn.innerText = "MINT NOW";
+                        return;
+                    }
+                }
+
+                btn.innerText = "Minting...";
+                statusEl.innerText = "⏳ Please confirm 0.0002 ETH in your wallet...";
+                
+                const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+
+                // Eksekusi Minting dengan nilai 0.0002 ETH
+                const tx = await contract.mint({ 
+                    value: ethers.parseEther("0.0002") 
+                });
+                
+                statusEl.innerText = "⚡ Processing on Base Chain...";
+                await tx.wait();
+
+                statusEl.innerHTML = `✅ MINT SUCCESSFUL!<br><a href="https://opensea.io/assets/base/${CONTRACT_ADDRESS}" target="_blank" class="link-opensea">View Collection on OpenSea</a>`;
+                statusEl.style.color = "#00ff00";
+                
+                btn.innerText = "MINT ANOTHER";
+                btn.disabled = false;
+                imgEl.classList.add("success-glow");
+
+            } catch (error) {
+                console.error(error);
+                if (error.code === "ACTION_REJECTED") {
+                    statusEl.innerText = "❌ Transaction rejected by user.";
+                } else {
+                    statusEl.innerText = "❌ Error: " + (error.reason || "Insufficient ETH / Sold out");
+                }
+                statusEl.style.color = "#ff4444";
+                btn.disabled = false;
+                btn.innerText = "MINT NOW";
+            }
+        }
+    </script>
+</body>
+</html>
